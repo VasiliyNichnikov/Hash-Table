@@ -7,7 +7,7 @@ from deleted_node_book import DeletedNodeBook
 class OpenAddressHashTable(HashTable):
     __size: int = 0
     __capacity: int = 10
-    __C: int = 11
+    __C: int = 37
     __REHASH = 1
     __table: typing.List[HashNodeBook] = []
 
@@ -22,6 +22,9 @@ class OpenAddressHashTable(HashTable):
 
         hash_result: int = (isbn * self.__C) % self.__capacity
         while self.__table[hash_result] is not None and not isinstance(self.__table[hash_result], DeletedNodeBook):
+            if self.__table[hash_result].isbn == isbn:
+                self.__table[hash_result] = HashNodeBook(isbn, author, title)
+                return
             hash_result = (hash_result + 1) % self.__capacity
         self.__table[hash_result] = HashNodeBook(isbn, author, title)
         self.__size += 1
@@ -39,21 +42,19 @@ class OpenAddressHashTable(HashTable):
         self.__capacity = new_capacity
         self.__table = new_table
 
-    def delete(self, isbn: int) -> None:
+    def delete(self, isbn: int) -> bool:
         hash_result: int = (isbn * self.__C) % self.__capacity
         while self.__table[hash_result] is not None:
             if self.__table[hash_result].isbn == isbn:
                 self.__table[hash_result] = DeletedNodeBook.get()
                 self.__size -= 1
-                return
+                return True
             hash_result = (hash_result + 1) % self.__capacity
+        return False
 
     def __str__(self) -> str:
         output: str = ""
         for element in self.__table:
-            if element is not None:
+            if element is not None and isinstance(element, HashNodeBook):
                 output += f'Book. ISBN: {element.isbn}; Author: {element.author}; Title: {element.title} \n'
         return output
-
-    def output_all_elements(self) -> None:
-        pass

@@ -9,7 +9,3 @@ class HashTable(ABC):
     @abstractmethod
     def delete(self, isbn: int) -> None:
         pass
-
-    @abstractmethod
-    def output_all_elements(self) -> None:
-        pass
